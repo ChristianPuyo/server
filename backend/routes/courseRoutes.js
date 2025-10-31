@@ -2,7 +2,9 @@ const {Router} = require("express")
 
 const {
     createCourseController,
-    getAllCourses
+    getAllCourses,
+    deleteCourse,
+    updatedCourse
 } = require('../controllers/courseController')
 
 const courseRouter = Router()
@@ -24,6 +26,35 @@ courseRouter.get("/", async(req,res)=>{
         res.status(200).json(courses)
     } catch (error) {
         res.status(500).json({error: error.message})
+    }
+})
+
+//Ruta para eliminar
+courseRouter.delete("/:id", async(req, res)=>{
+    const {id} = req.params;
+    try {
+       const deletedCourse = await deleteCourse(id)
+       if(!deletedCourse){
+        return res.status(404).json({errorRuta: "Course not found" })
+       }
+       res.status(200).json({message: "Course deleted succesfully"})
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Ruta para actualizar curso
+courseRouter.put("/:id", async(req, res)=>{
+    const {id} = req.params
+    const courseData = req.body
+    try {
+        const updateCourse = await updatedCourse(id, courseData)
+        if(!updateCourse){
+            return res.status(404).json({error:"Course not found"})
+        }
+        res.status(200).json(updatedCourse)
+    } catch (err) {
+        res.status(400).json({error: err.message})
     }
 })
 
